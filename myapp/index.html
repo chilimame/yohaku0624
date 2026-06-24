@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>余白（スペース）診断</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .question-box {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result-area {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e0f7fa;
+            border-radius: 8px;
+            display: none; /* 最初は隠しておきます */
+        }
+    </style>
+</head>
+<body>
+
+    <h2>現在の「余白」現在地チェック</h2>
+    <p>「やらねばならない」で常にフル稼働していませんか？直感でチェックを入れてください。</p>
+
+    <div id="quiz-form">
+        <!-- 時間の余裕に関する質問 -->
+        <div class="question-box">
+            <p>1. 1日の予定が常に詰まっていて、ぼーっとする時間がない</p>
+            <label><input type="radio" name="q1" value="0"> よくある (余裕0%)</label><br>
+            <label><input type="radio" name="q1" value="10"> たまにある (余裕10%)</label><br>
+            <label><input type="radio" name="q1" value="25"> あまりない (余裕25%)</label>
+        </div>
+
+        <div class="question-box">
+            <p>2. 睡眠時間や食事の時間を削って作業をしてしまう</p>
+            <label><input type="radio" name="q2" value="0"> よくある</label><br>
+            <label><input type="radio" name="q2" value="10"> たまにある</label><br>
+            <label><input type="radio" name="q2" value="25"> あまりない</label>
+        </div>
+
+        <!-- 心の余裕に関する質問 -->
+        <div class="question-box">
+            <p>3. 「〜しなければならない」という義務感だけで動いている気がする</p>
+            <label><input type="radio" name="q3" value="0"> よくある</label><br>
+            <label><input type="radio" name="q3" value="10"> たまにある</label><br>
+            <label><input type="radio" name="q3" value="25"> あまりない</label>
+        </div>
+
+        <div class="question-box">
+            <p>4. 常に100%の力で走り続けていないと不安になる</p>
+            <label><input type="radio" name="q4" value="0"> よくある</label><br>
+            <label><input type="radio" name="q4" value="10"> たまにある</label><br>
+            <label><input type="radio" name="q4" value="25"> あまりない</label>
+        </div>
+
+        <button onclick="calculateYohaku()">診断する</button>
+    </div>
+
+    <!-- 結果を表示するエリア -->
+    <div id="result-area">
+        <h3>診断結果</h3>
+        <p>あなたの現在の時間の余裕度: <strong id="time-score">0</strong>%</p>
+        <p>あなたの現在の心の余裕度: <strong id="mental-score">0</strong>%</p>
+        <hr>
+        <p id="advice-text"></p>
+    </div>
+
+    <script>
+        // 診断ボタンが押された時に実行されるプログラムです
+        function calculateYohaku() {
+            // 各質問の回答を取得します
+            let q1 = document.querySelector('input[name="q1"]:checked');
+            let q2 = document.querySelector('input[name="q2"]:checked');
+            let q3 = document.querySelector('input[name="q3"]:checked');
+            let q4 = document.querySelector('input[name="q4"]:checked');
+
+            // すべての質問に答えていない場合はアラートを出します
+            if (!q1 || !q2 || !q3 || !q4) {
+                alert("すべての項目にチェックを入れてくださいね。");
+                return;
+            }
+
+            // 点数を計算します（文字列から数値に変換します）
+            let timeMargin = parseInt(q1.value) + parseInt(q2.value);
+            let mentalMargin = parseInt(q3.value) + parseInt(q4.value);
+            
+            // 最大値がそれぞれ50%になるように計算しています（25 + 25 = 50%。後で100%満点にするために2倍します）
+            let totalTimeMargin = timeMargin * 2; 
+            let totalMentalMargin = mentalMargin * 2;
+
+            // 結果を画面に表示します
+            document.getElementById("time-score").innerText = totalTimeMargin;
+            document.getElementById("mental-score").innerText = totalMentalMargin;
+
+            // 余白の度合いによってメッセージを変えます
+            let advice = "";
+            let averageMargin = (totalTimeMargin + totalMentalMargin) / 2;
+
+            if (averageMargin < 30) {
+                advice = "今は100%のフル稼働で走り続けている状態かもしれません。完璧を目指さず、まずは60%の力で取り組むことを許可して、意識的に『何もしないスペース』を作ってみましょう。";
+            } else if (averageMargin < 70) {
+                advice = "少しずつ余白を持てていますね。「やらねばならない」を手放し、さらに心地よいペースを探っていきましょう。";
+            } else {
+                advice = "素晴らしいです！心と時間に十分な余白があり、とても良いバランスが保てています。";
+            }
+
+            document.getElementById("advice-text").innerText = advice;
+            document.getElementById("result-area").style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
